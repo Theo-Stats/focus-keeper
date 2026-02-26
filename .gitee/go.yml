@@ -1,0 +1,58 @@
+# .gitee/go.yml - Gitee Go 构建配置
+
+version: '1.0'
+name: build-windows
+displayName: Build Windows Installer
+
+triggers:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+stages:
+  - name: build
+    displayName: 构建 Windows 安装包
+    strategy:
+      windows:
+        - windows-2022
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: setup-rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: x86_64-pc-windows-msvc
+
+      - name: install-pnpm
+        run: npm install -g pnpm
+        shell: pwsh
+
+      - name: install-deps
+        run: pnpm install
+        shell: pwsh
+
+      - name: build-frontend
+        run: pnpm run build
+        shell: pwsh
+
+      - name: build-tauri
+        run: pnpm tauri build
+        shell: pwsh
+
+      - name: upload-artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Focus-Keeper-Setup
+          path: |
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/msi/*.msi
+          if-no-files-found: error
