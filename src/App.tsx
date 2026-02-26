@@ -3,8 +3,9 @@ import { FocusMode } from '@/pages/FocusMode'
 import { WebsiteBlocker } from '@/pages/WebsiteBlocker'
 import { AppBlocker } from '@/pages/AppBlocker'
 import { Statistics } from '@/pages/Statistics'
+import { PasswordManager } from '@/pages/PasswordManager'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { Target, Shield, Smartphone, BarChart3 } from 'lucide-react'
+import { Target, Shield, Smartphone, BarChart3, Lock } from 'lucide-react'
 import './App.css'
 
 function App() {
@@ -31,6 +32,10 @@ function App() {
               <Target className="w-4 h-4" />
               专注模式
             </TabsTrigger>
+            <TabsTrigger value="password" className="flex items-center gap-2">
+              <Lock className="w-4 h-4" />
+              密码锁定
+            </TabsTrigger>
             <TabsTrigger value="websites" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
               网站屏蔽
@@ -47,6 +52,10 @@ function App() {
 
           <TabsContent value="focus">
             <FocusMode />
+          </TabsContent>
+
+          <TabsContent value="password">
+            <PasswordManager />
           </TabsContent>
 
           <TabsContent value="websites">

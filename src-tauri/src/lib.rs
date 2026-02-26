@@ -1,7 +1,7 @@
 mod blocker;
 mod commands;
 
-use commands::{hosts, process, stats, focus};
+use commands::{hosts, process, stats, focus, lock};
 use tauri::menu::{Menu, MenuItem};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -54,6 +54,13 @@ pub fn run() {
             focus::resume_focus,
             focus::stop_focus,
             focus::get_focus_state,
+            lock::has_password,
+            lock::set_password,
+            lock::verify_password,
+            lock::change_password,
+            lock::lock_focus,
+            lock::unlock,
+            lock::get_lock_state,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

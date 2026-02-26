@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Shield, Trash2, Plus, Globe } from 'lucide-react'
+import { Shield, Trash2, Plus, Globe, Lock } from 'lucide-react'
 
 interface WebsiteBlockResult {
   success: boolean
@@ -17,10 +17,21 @@ export function WebsiteBlocker() {
   const [newWebsite, setNewWebsite] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [isLocked, setIsLocked] = useState(false)
 
   useEffect(() => {
     loadBlockedWebsites()
+    loadLockState()
   }, [])
+
+  const loadLockState = async () => {
+    try {
+      const state = await invoke<any>('get_lock_state')
+      setIsLocked(state.is_locked)
+    } catch (error) {
+      console.error('Failed to load lock state:', error)
+    }
+  }
 
   const loadBlockedWebsites = async () => {
     try {
@@ -35,6 +46,12 @@ export function WebsiteBlocker() {
 
   const addWebsite = async () => {
     if (!newWebsite.trim()) return
+
+    if (isLocked) {
+      setMessage({ type: 'error', text: '当前处于锁定模式，无法添加网站' })
+      setTimeout(() => setMessage(null), 3000)
+      return
+    }
 
     setLoading(true)
     try {
@@ -56,6 +73,11 @@ export function WebsiteBlocker() {
   }
 
   const removeWebsite = async (website: string) => {
+    if (isLocked) {
+      setMessage({ type: 'error', text: '当前处于锁定模式，无法移除网站' })
+      setTimeout(() => setMessage(null), 3000)
+      return
+    }
     try {
       const result = await invoke<WebsiteBlockResult>('remove_website', { domain: website })
       if (result.success) {
@@ -72,6 +94,11 @@ export function WebsiteBlocker() {
   }
 
   const unblockAll = async () => {
+    if (isLocked) {
+      setMessage({ type: 'error', text: '当前处于锁定模式，无法解除屏蔽' })
+      setTimeout(() => setMessage(null), 3000)
+      return
+    }
     try {
       const result = await invoke<WebsiteBlockResult>('unblock_all')
       if (result.success) {
@@ -157,12 +184,20 @@ export function WebsiteBlocker() {
               <Globe className="w-5 h-5" />
               已屏蔽的网站
             </CardTitle>
-            {blockedWebsites.length > 0 && (
-              <Button variant="destructive" size="sm" onClick={unblockAll}>
-                <Trash2 className="w-4 h-4 mr-2" />
-                全部解除
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              {isLocked && (
+                <Badge variant="destructive" className="flex items-center gap-1">
+                  <Lock className="w-3 h-3" />
+                  锁定中
+                </Badge>
+              )}
+              {blockedWebsites.length > 0 && !isLocked && (
+                <Button variant="destructive" size="sm" onClick={unblockAll}>
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  全部解除
+                </Button>
+              )}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
