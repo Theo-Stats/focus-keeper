@@ -3,7 +3,6 @@ import { invoke } from '@tauri-apps/api/core'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Lock, Unlock, Key, Shield } from 'lucide-react'
 
 interface LockResult {
@@ -19,7 +18,6 @@ interface LockState {
 
 export function PasswordManager() {
   const [lockState, setLockState] = useState<LockState | null>(null)
-  const [showPasswordSetup, setShowPasswordSetup] = useState(false)
   const [showUnlock, setShowUnlock] = useState(false)
   const [password, setPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -69,7 +67,6 @@ export function PasswordManager() {
       const result = await invoke<LockResult>('set_password', { password: newPassword })
       if (result.success) {
         setMessage({ type: 'success', text: result.message })
-        setShowPasswordSetup(false)
         setPassword('')
         setNewPassword('')
         setConfirmPassword('')
@@ -193,9 +190,8 @@ export function PasswordManager() {
                 </p>
                 <div className="space-y-3">
                   <div>
-                    <Label htmlFor="new-password">设置密码（至少 4 位）</Label>
+                    <div className="text-sm font-medium mb-1">设置密码（至少 4 位）</div>
                     <Input
-                      id="new-password"
                       type="password"
                       placeholder="输入密码"
                       value={newPassword}
@@ -204,9 +200,8 @@ export function PasswordManager() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="confirm-password">确认密码</Label>
+                    <div className="text-sm font-medium mb-1">确认密码</div>
                     <Input
-                      id="confirm-password"
                       type="password"
                       placeholder="再次输入密码"
                       value={confirmPassword}
