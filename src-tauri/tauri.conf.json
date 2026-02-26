@@ -41,14 +41,9 @@
     "windows": {
       "nsis": {
         "installerIcon": "icons/icon.ico",
-        "headerImage": null,
-        "sidebarImage": null,
-        "license": null,
         "installMode": "currentUser",
-        "languages": ["SimpChinese", "English"],
-        "displayLanguageSelector": false
+        "languages": ["SimpChinese", "English"]
       },
-      "wix": null,
       "certificateThumbprint": null,
       "digestAlgorithm": "sha256",
       "timestampUrl": ""
